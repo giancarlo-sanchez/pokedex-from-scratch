@@ -1,32 +1,41 @@
 import React, { Component } from 'react';
 import { Redirect } from 'react-router-dom';
-import { baseUrl } from './config';
 
-class LogoutButton extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      loggedOut: false
-    };
-  }
+import { connect } from 'react-redux';
+import { logout } from './store/authentication';
 
-  logout = () => {
-    fetch(`${baseUrl}/session`, {
-      method: 'delete',
-      headers: { Authorization: `Bearer ${this.props.token}` },
-    }).then(() => this.setState({ loggedOut: true }));
-  }
+// class LogoutButton extends Component {
+//   constructor(props) {
+//     super(props);
+//     this.state = {
+//       loggedOut: false
+//     };
+//   }
 
-  render() {
-    if (this.state.loggedOut) {
-      return <Redirect to="/login" />;
-    }
-    return (
-      <div id="logout-button-holder">
-        <button onClick={this.logout}>Logout</button>
-      </div>
-    );
-  }
-}
+  const LogoutButton = props =>
+  props.loggedOut ?
+    <Redirect to="/login" /> :
+    <div id="logout-button-holder">
+      <button onClick={props.logout}>Logout</button>
+    </div>
+;
 
-export default LogoutButton;
+
+const mapStateToProps = state => {
+  return {
+    loggedOut: !state.authentication.token,
+  };
+};
+
+const mapDispatchToProps = dispatch => {
+  return {
+    logout: () => dispatch(logout()),
+  };
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(
+  LogoutButton
+);

@@ -1,11 +1,13 @@
 import React, { Component } from 'react';
 import { NavLink, Route } from 'react-router-dom';
+import {connect} from 'react-redux'
 
 import { imageUrl } from './config';
 import LogoutButton from './LogoutButton';
 import PokemonDetail from './PokemonDetail';
 import PokemonForm from './PokemonForm';
 import Fab from './Fab';
+import { getPokemon, showForm } from './store/pokemon';
 
 class PokemonBrowser extends Component {
   constructor(props) {
@@ -13,6 +15,11 @@ class PokemonBrowser extends Component {
     this.state = {
       showForm: false,
     };
+  }
+
+
+  componentDidMount() {
+    this.props.getPokemon();
   }
 
   handleCreated = (pokemon) => {
@@ -65,4 +72,23 @@ class PokemonBrowser extends Component {
   }
 }
 
-export default PokemonBrowser;
+const mapStateToProps = state => {
+  return {
+    pokemon: state.pokemon.list,
+    //formVisible: state.pokemon.formVisible,
+  };
+}
+
+const mapDispatchToProps = dispatch => {
+  return {
+    getPokemon: () => dispatch(getPokemon()),
+    //showForm: () => dispatch(showForm()),
+  }
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(
+  PokemonBrowser
+);
